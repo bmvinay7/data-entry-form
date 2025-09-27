@@ -1,14 +1,15 @@
 /**
- * 🚀 Google Apps Script - Form Handler (FIXED CORS VERSION)
+ * 🚀 Google Apps Script - Form Handler (READY TO DEPLOY)
  * 
- * IMPORTANT: Google Apps Script automatically handles CORS for web apps.
- * The setHeader() method is NOT supported in Apps Script ContentService.
+ * ✅ CONFIGURED WITH YOUR SPREADSHEET ID: 1mmDRze-8_-bdztvkVqpum6vxGPVkmYFbosIbp4mFdKo
  * 
- * SETUP INSTRUCTIONS:
- * 1. Replace YOUR_SPREADSHEET_ID_HERE with your actual spreadsheet ID
- * 2. Copy this ENTIRE script to your Google Apps Script project
- * 3. Save and deploy as Web App with "Anyone" access
- * 4. When deploying, make sure to select "Execute as: Me" and "Who has access: Anyone"
+ * DEPLOYMENT INSTRUCTIONS:
+ * 1. Copy this ENTIRE script to your Google Apps Script project
+ * 2. Save the project (Ctrl+S)
+ * 3. Deploy as Web App:
+ *    - Execute as: Me
+ *    - Who has access: Anyone
+ * 4. Copy the Web App URL and update your main.js
  */
 
 // 📝 CONFIGURATION - CONFIGURED WITH YOUR SPREADSHEET
@@ -292,11 +293,6 @@ function testFormSubmission() {
 function initializeEverything() {
     try {
         console.log('🔧 Initializing spreadsheet...');
-
-        // Verify spreadsheet ID is set
-        if (SPREADSHEET_ID === 'YOUR_SPREADSHEET_ID_HERE') {
-            throw new Error('Please update SPREADSHEET_ID in the script configuration');
-        }
 
         // Open and setup spreadsheet
         const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);

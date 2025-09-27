@@ -9,8 +9,8 @@ class DataEntryForm {
     this.submitBtn = document.getElementById('submitBtn');
     this.statusMessage = document.getElementById('statusMessage');
     
-    // Google Apps Script URL - WORKING VERSION
-    this.scriptURL = 'https://script.google.com/macros/s/AKfycbwX41LkmV90Cse8m7HVjZaWmFM4dw47Ubr09GlMUsfdJGlsyQ1Vzowz6g8FyqKsQJQUeg/exec';
+    // Google Apps Script URL - WORKING VERSION WITH CORRECT SPREADSHEET ID
+    this.scriptURL = 'https://script.google.com/macros/s/AKfycbysPTl60f-4RXU8YebctitPpbmN9ZsJgHrcU6jImBU8geKp1O-CGWMY_40D3VNznDjA6w/exec';
     
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
