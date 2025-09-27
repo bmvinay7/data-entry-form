@@ -246,7 +246,7 @@ class DataEntryForm {
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       // Use the proxy endpoint instead of the direct Google Apps Script URL
-      const response = await fetch('/api/proxy', {
+      const response = await fetch('https://dataentryform.vercel.app/api/proxy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -254,6 +254,11 @@ class DataEntryForm {
         body: JSON.stringify(data),
         signal: controller.signal
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`HTTP error! status: ${response.status}`, { cause: errorData });
+      }
       clearTimeout(timeoutId);
 
       if (response.ok) {
