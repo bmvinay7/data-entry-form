@@ -20,24 +20,23 @@ const SHEET_NAME = 'Form Responses';
  */
 function doPost(e) {
   try {
-    // Set up CORS headers for cross-origin requests
-    const output = ContentService.createTextOutput();
-    output.setMimeType(ContentService.MimeType.JSON);
-    
     // Log the incoming request for debugging
     console.log('Received POST request:', e);
+    console.log('Form data:', e.parameter);
     
     // Get the form data
     const formData = e.parameter;
     
     // Validate required fields
-    if (!formData.fullName || !formData.email || !formData.streetAddress) {
-      return createErrorResponse('Missing required fields');
+    if (!formData.fullName || !formData.email || !formData.streetAddress || !formData.city || !formData.postcode) {
+      console.error('Missing required fields:', formData);
+      return createErrorResponse('Missing required fields. Please fill in all required fields.');
     }
     
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
+      console.error('Invalid email format:', formData.email);
       return createErrorResponse('Invalid email format');
     }
     
@@ -45,8 +44,10 @@ function doPost(e) {
     const result = addToSpreadsheet(formData);
     
     if (result.success) {
+      console.log('Data added successfully to row:', result.rowNumber);
       return createSuccessResponse('Data submitted successfully! Thank you for your information.', result.rowNumber);
     } else {
+      console.error('Failed to add data to spreadsheet:', result.error);
       return createErrorResponse(result.error);
     }
     
@@ -80,19 +81,27 @@ function doGet(e) {
  */
 function addToSpreadsheet(formData) {
   try {
+    console.log('Attempting to open spreadsheet with ID:', SPREADSHEET_ID);
+    
     // Open the spreadsheet by ID
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    console.log('Spreadsheet opened successfully:', spreadsheet.getName());
+    
     let sheet = spreadsheet.getSheetByName(SHEET_NAME);
     
     // Create sheet if it doesn't exist
     if (!sheet) {
+      console.log('Sheet not found, creating new sheet:', SHEET_NAME);
       sheet = spreadsheet.insertSheet(SHEET_NAME);
       initializeSheetHeaders(sheet);
     }
     
     // Check if headers exist (in case sheet was created manually)
     const lastRow = sheet.getLastRow();
+    console.log('Current last row:', lastRow);
+    
     if (lastRow === 0) {
+      console.log('No headers found, initializing...');
       initializeSheetHeaders(sheet);
     }
     
@@ -111,8 +120,12 @@ function addToSpreadsheet(formData) {
       formData.comments || ''
     ];
     
+    console.log('Prepared row data:', rowData);
+    
     // Add the data to the sheet
     const newRowNumber = sheet.getLastRow() + 1;
+    console.log('Adding data to row:', newRowNumber);
+    
     const range = sheet.getRange(newRowNumber, 1, 1, rowData.length);
     range.setValues([rowData]);
     
@@ -126,10 +139,14 @@ function addToSpreadsheet(formData) {
     
     // Log success
     console.log('Data added successfully to row:', newRowNumber);
-    console.log('Data:', rowData);
     
     // Send email notification (optional)
-    sendNotificationEmail(formData, newRowNumber);
+    try {
+      sendNotificationEmail(formData, newRowNumber);
+    } catch (emailError) {
+      console.warn('Email notification failed:', emailError);
+      // Don't fail the whole operation if email fails
+    }
     
     return {
       success: true,
@@ -140,6 +157,9 @@ function addToSpreadsheet(formData) {
     
   } catch (error) {
     console.error('Error adding to spreadsheet:', error);
+    console.error('Error details:', error.toString());
+    console.error('Stack trace:', error.stack);
+    
     return {
       success: false,
       error: 'Failed to save data: ' + error.toString()
