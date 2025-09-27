@@ -245,9 +245,9 @@ class DataEntryForm {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(this.scriptURL, {
+      // Use the proxy endpoint instead of the direct Google Apps Script URL
+      const response = await fetch('/api/proxy', {
         method: 'POST',
-        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
