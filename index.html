@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Entry Form - Google Sheets Integration</title>
+
+    <meta name="description" content="A user-friendly data entry form that stores information directly to Google Sheets" />
+    <meta name="author" content="Dualite Alpha" />
+
+    <meta property="og:title" content="Data Entry Form - Google Sheets Integration" />
+    <meta property="og:description" content="A user-friendly data entry form that stores information directly to Google Sheets" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://ibb.co/67X3xfSV" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Data Entry Form - Google Sheets Integration" />
+    <meta name="twitter:description" content="A user-friendly data entry form that stores information directly to Google Sheets" />
+    <meta name="twitter:site" content="@dualitedev" />
+    <meta name="twitter:image" content="https://ibb.co/67X3xfSV" />
+
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/HLfD5wgf/dualite-favicon.png" />
+    <link rel="canonical" href="https://alpha.dualite.dev" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Data Entry Form",
+        "url": "https://alpha.dualite.dev",
+        "description": "A user-friendly data entry form that stores information directly to Google Sheets",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Dualite Alpha"
+        }
+      }
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="header__title">Data Entry Form</h1>
+        <p class="header__subtitle">Submit your information securely to our database</p>
+      </header>
+
+      <main class="main">
+        <form class="form" id="dataEntryForm">
+          <div class="form__group">
+            <label class="form__label" for="fullName">
+              <span class="form__label-text">Full Name</span>
+              <span class="form__required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="fullName" 
+              name="fullName" 
+              class="form__input" 
+              required
+              placeholder="Enter your full name"
+            >
+            <span class="form__error" id="fullNameError"></span>
+          </div>
+
+          <div class="form__group">
+            <label class="form__label" for="email">
+              <span class="form__label-text">Email Address</span>
+              <span class="form__required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="form__input" 
+              required
+              placeholder="Enter your email address"
+            >
+            <span class="form__error" id="emailError"></span>
+          </div>
+
+          <div class="form__group">
+            <label class="form__label" for="phone">
+              <span class="form__label-text">Phone Number</span>
+            </label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              class="form__input" 
+              placeholder="Enter your phone number"
+            >
+            <span class="form__error" id="phoneError"></span>
+          </div>
+
+          <div class="form__group">
+            <label class="form__label" for="streetAddress">
+              <span class="form__label-text">Street Address</span>
+              <span class="form__required">*</span>
+            </label>
+            <input 
+              type="text" 
+              id="streetAddress" 
+              name="streetAddress" 
+              class="form__input" 
+              required
+              placeholder="Enter your street address"
+            >
+            <span class="form__error" id="streetAddressError"></span>
+          </div>
+
+          <div class="form__row">
+            <div class="form__group form__group--half">
+              <label class="form__label" for="city">
+                <span class="form__label-text">City</span>
+                <span class="form__required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="city" 
+                name="city" 
+                class="form__input" 
+                required
+                placeholder="Enter your city"
+              >
+              <span class="form__error" id="cityError"></span>
+            </div>
+
+            <div class="form__group form__group--half">
+              <label class="form__label" for="postcode">
+                <span class="form__label-text">Postcode</span>
+                <span class="form__required">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="postcode" 
+                name="postcode" 
+                class="form__input" 
+                required
+                placeholder="Enter your postcode"
+              >
+              <span class="form__error" id="postcodeError"></span>
+            </div>
+          </div>
+
+          <div class="form__group">
+            <label class="form__label" for="comments">
+              <span class="form__label-text">Additional Comments</span>
+            </label>
+            <textarea 
+              id="comments" 
+              name="comments" 
+              class="form__textarea" 
+              rows="4"
+              placeholder="Any additional information you'd like to share"
+            ></textarea>
+          </div>
+
+          <div class="form__actions">
+            <button type="submit" class="btn btn--primary" id="submitBtn">
+              <span class="btn__text">Submit Information</span>
+              <span class="btn__loader" id="btnLoader"></span>
+            </button>
+            <button type="reset" class="btn btn--secondary">Clear Form</button>
+          </div>
+        </form>
+
+        <div class="status-message" id="statusMessage"></div>
+      </main>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
