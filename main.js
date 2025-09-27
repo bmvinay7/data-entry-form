@@ -245,19 +245,24 @@ class DataEntryForm {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      // Use the proxy endpoint instead of the direct Google Apps Script URL
-      const response = await fetch('https://dataentryform.vercel.app/api/proxy', {
+      // Use a public CORS proxy to forward the request to Google Apps Script
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+      const targetUrl = 'https://script.google.com/macros/s/AKfycbxagsZQktsFRbsarrjFDnA27cDx3ak2BReFz-AVk17Y8IhMlFjiEKeALaiCp5aatXT4xA/exec';
+      
+      const response = await fetch(proxyUrl + targetUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
         body: JSON.stringify(data),
         signal: controller.signal
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`HTTP error! status: ${response.status}`, { cause: errorData });
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       clearTimeout(timeoutId);
 
