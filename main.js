@@ -9,8 +9,8 @@ class DataEntryForm {
     this.submitBtn = document.getElementById('submitBtn');
     this.statusMessage = document.getElementById('statusMessage');
     
-    // Google Apps Script URL - UPDATED WITH YOUR SCRIPT URL
-    this.scriptURL = 'https://script.google.com/macros/s/AKfycbxagsZQktsFRbsarrjFDnA27cDx3ak2BReFz-AVk17Y8IhMlFjiEKeALaiCp5aatXT4xA/exec';
+    // Google Apps Script URL - WORKING VERSION
+    this.scriptURL = 'https://script.google.com/macros/s/AKfycbwX41LkmV90Cse8m7HVjZaWmFM4dw47Ubr09GlMUsfdJGlsyQ1Vzowz6g8FyqKsQJQUeg/exec';
     
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
@@ -176,11 +176,16 @@ class DataEntryForm {
 
   async checkScriptConnection() {
     if (this.scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      console.warn('Google Apps Script URL not configured');
+      console.warn('⚠️ Google Apps Script URL not configured');
       if (this.isDevelopment) {
         this.showStatus(
-          'Development Mode: Google Apps Script URL not configured. Please see SETUP_GUIDE.md.',
+          '⚠️ Development Mode: Google Apps Script URL not configured. Please see COMPLETE_SETUP_GUIDE.md.',
           'warning'
+        );
+      } else {
+        this.showStatus(
+          '⚠️ Configuration Error: Please update the Google Apps Script URL in main.js. See COMPLETE_SETUP_GUIDE.md.',
+          'error'
         );
       }
     } else {
@@ -194,18 +199,30 @@ class DataEntryForm {
     try {
       console.log('🔄 Testing connection to Google Apps Script...');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       
-      const response = await fetch(this.scriptURL, { method: 'GET', mode: 'cors', signal: controller.signal });
+      const response = await fetch(this.scriptURL, { 
+        method: 'GET', 
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit',
+        signal: controller.signal 
+      });
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        this.showStatus('✅ Connected to Google Sheets! Ready to accept submissions.', 'success');
+        const result = await response.json();
+        if (result.corsEnabled) {
+          this.showStatus('✅ Connected to Google Sheets! CORS properly configured.', 'success');
+        } else {
+          this.showStatus('✅ Connected to Google Sheets! Ready to accept submissions.', 'success');
+        }
       } else {
-        this.showStatus('⚠️ Connection to Google Sheets failed. Please check script deployment. See SETUP_GUIDE.md.', 'warning');
+        this.showStatus('⚠️ Connection to Google Sheets failed. Please check script deployment.', 'warning');
       }
     } catch (error) {
-      console.warn('ℹ️ Connection test failed (likely CORS). This is expected on some servers. Form should still work.');
+      console.warn('ℹ️ Connection test failed:', error.message);
+      this.showStatus('⚠️ Connection test failed. Form may still work for submissions.', 'warning');
     }
   }
 
@@ -240,21 +257,21 @@ class DataEntryForm {
       const data = Object.fromEntries(formData.entries());
       data.timestamp = new Date().toISOString();
 
-      console.log('📤 Submitting form data as JSON to Google Sheets...');
+      console.log('📤 Submitting form data to Google Sheets...');
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      // Use a public CORS proxy to forward the request to Google Apps Script
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-      const targetUrl = 'https://script.google.com/macros/s/AKfycbxagsZQktsFRbsarrjFDnA27cDx3ak2BReFz-AVk17Y8IhMlFjiEKeALaiCp5aatXT4xA/exec';
-      
-      const response = await fetch(proxyUrl + targetUrl, {
+      // Submit directly to Google Apps Script (no proxy needed)
+      const response = await fetch(this.scriptURL, {
         method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
         },
+        redirect: 'follow',
         body: JSON.stringify(data),
         signal: controller.signal
       });
@@ -331,21 +348,33 @@ class DataEntryForm {
     try {
       console.log('🔄 Testing connection...');
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(this.scriptURL, { method: 'GET', mode: 'cors', signal: controller.signal });
+      const response = await fetch(this.scriptURL, { 
+        method: 'GET', 
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'omit',
+        signal: controller.signal 
+      });
       clearTimeout(timeoutId);
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('Connection test result:', result);
         this.showStatus('✅ Connection successful! Google Sheets integration is working.', 'success');
         return true;
       } else {
-        this.showStatus(`❌ Connection failed (Status: ${response.status}). See SETUP_GUIDE.md.`, 'error');
+        this.showStatus(`❌ Connection failed (Status: ${response.status}). Check Apps Script deployment.`, 'error');
         return false;
       }
     } catch (error) {
       console.error('❌ Connection test error:', error);
-      this.showStatus('❌ Connection error. This is expected in local development. See SETUP_GUIDE.md.', 'error');
+      if (this.isDevelopment) {
+        this.showStatus('❌ Connection error. This is expected in local development.', 'error');
+      } else {
+        this.showStatus(`❌ Connection error: ${error.message}. Check CORS configuration.`, 'error');
+      }
       return false;
     }
   }

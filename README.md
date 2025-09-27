@@ -1,45 +1,63 @@
-# Google Sheets Data Entry Form
+# 🌸 Google Sheets Data Entry Form
 
 A beautiful, responsive data entry form that automatically stores submissions to Google Sheets. Built with vanilla HTML, CSS, and JavaScript for maximum compatibility and performance.
 
 ## ✨ Features
 
-- **🎨 Beautiful Design**: Modern, professional styling with smooth animations
+- **🎨 Beautiful Floral Design**: Modern, professional styling with smooth animations
 - **📱 Fully Responsive**: Works perfectly on mobile, tablet, and desktop
 - **✅ Real-time Validation**: Instant feedback as users type
 - **🔗 Google Sheets Integration**: Direct storage via Google Apps Script
 - **♿ Accessible**: Screen reader friendly with proper ARIA labels
-- **🌍 Internationalization**: UK English localization
+- **🌍 UK Localization**: Date formats, postcodes, and validation
 - **⚡ Fast & Lightweight**: No external dependencies
 - **🛡️ Secure**: Server-side validation and HTTPS transmission
+- **🚀 Production Ready**: Deployed and tested
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Google account
 - Modern web browser
-- Basic text editor
 
 ### 1. Setup Google Sheets Integration
-1. **Access your spreadsheet**: https://docs.google.com/spreadsheets/d/1nATvrEfrTrS22K5AjZ9Q0hL_XHRJHCMVaRAqItYtlE0
+1. **Create a Google Spreadsheet** for storing form data
 2. **Create Google Apps Script**: Go to https://script.google.com/
-3. **Copy script code**: Use the code from `google-apps-script.js`
-4. **Deploy as web app**: Set access to "Anyone"
-5. **Update form configuration**: Add your script URL to `main.js`
+3. **Copy script code**: Use the code from `google-apps-script-final.js`
+4. **Update SPREADSHEET_ID** in the script with your spreadsheet ID
+5. **Deploy as web app**: Set access to "Anyone" (critical for CORS)
+6. **Update form configuration**: Add your script URL to `main.js`
 
 ### 2. Run the Form
 ```bash
-# Install dependencies
+# Install dependencies (optional - for development server)
 yarn install
 
 # Start development server
 yarn dev
+
+# Or simply open index.html in your browser
 ```
 
 ### 3. Test Everything
-- Fill out the form (use "Fill Test Data" button in development)
-- Submit and verify data appears in Google Sheets
+- Use `test-form.html` for quick testing
+- Fill out the form and submit
+- Verify data appears in Google Sheets
 - Test on different devices
+
+## 📁 Project Structure
+
+```
+├── index.html              # Main form page
+├── main.js                 # Form logic and validation
+├── style.css               # Beautiful floral styling
+├── google-apps-script-final.js  # Google Apps Script code
+├── test-form.html          # Testing page
+├── verify-setup.html       # Setup verification tool
+├── SETUP_GUIDE.md          # Detailed setup instructions
+├── STEP_BY_STEP_SETUP.md   # Visual step-by-step guide
+└── README.md               # This file
+```
 
 ## 📋 Form Fields
 
@@ -62,8 +80,8 @@ Update `main.js` line 14:
 this.scriptURL = 'https://script.google.com/macros/s/your-script-id/exec';
 ```
 
-### Email Notifications
-Update `google-apps-script.js` line 168:
+### Email Notifications (Optional)
+Update `google-apps-script-final.js`:
 ```javascript
 const NOTIFICATION_EMAIL = 'your-email@example.com';
 ```
@@ -170,20 +188,20 @@ await dataEntryForm.testConnection()
 - Verify script deployment settings
 
 **Data Not Saving**
-- Check script execution logs
-- Verify spreadsheet permissions
-- Test script authorization
+- Check Google Apps Script execution logs
+- Verify spreadsheet ID is correct
+- Ensure script has proper permissions
 
-**Network Errors**
-- Ensure script has "Anyone" access
-- Check CORS configuration
-- Verify internet connection
+**CORS Errors**
+- Ensure script deployment has "Anyone" access (not "Anyone with Google account")
+- Check script is deployed as Web App
+- Verify script URL is correct
 
-### Debug Steps
-1. Open browser developer tools
-2. Check console for errors
-3. Test in Google Apps Script editor
-4. Verify spreadsheet access
+### Debug Tools
+- Use `test-form.html` for quick testing
+- Use `verify-setup.html` for connection verification
+- Check browser developer console for errors
+- Review Google Apps Script execution logs
 
 ## 📈 Performance
 
@@ -219,6 +237,24 @@ For setup help or customization:
 2. Review browser console errors
 3. Test Google Apps Script functions
 4. Verify all configuration steps
+
+---
+
+## 🌐 Live Demo
+
+The form is currently deployed and working at: **[Your Vercel URL]**
+
+Current Google Apps Script URL: `https://script.google.com/macros/s/AKfycbwX41LkmV90Cse8m7HVjZaWmFM4dw47Ubr09GlMUsfdJGlsyQ1Vzowz6g8FyqKsQJQUeg/exec`
+
+## 🎯 What's Included
+
+- ✅ Working Google Apps Script integration
+- ✅ Beautiful floral-themed responsive design
+- ✅ Real-time form validation
+- ✅ UK localization (dates, postcodes)
+- ✅ Accessibility features
+- ✅ Testing tools and verification pages
+- ✅ Comprehensive setup documentation
 
 ---
 

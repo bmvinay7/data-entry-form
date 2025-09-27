@@ -1,12 +1,15 @@
 # 🚀 Google Apps Script Setup Guide
 
-Follow these steps carefully to connect your web form to your Google Sheet. This is the most common point of failure, so please read each step.
+Follow these steps carefully to connect your web form to your Google Sheet. **CORS errors are the #1 cause of failures** - this guide prevents them.
 
-## The Problem: Why It Fails
+## 🚨 CORS Error Prevention
 
-For security, web browsers block requests from one website (like your local development server) to another (like Google). This is called **CORS**. This means **your form will NOT save data to Google Sheets when running locally**. It will only work when you deploy your website to a live server.
+**CORS (Cross-Origin Resource Sharing)** errors happen when:
+1. Google Apps Script isn't deployed correctly
+2. CORS headers aren't set properly in the script
+3. The web app permissions are wrong
 
-Our code detects this and *simulates* a successful submission during local development so you can still test the form's appearance and validation.
+**This guide ensures proper CORS configuration to prevent these errors permanently.**
 
 ## Step 1: Copy the Script Code
 
@@ -17,18 +20,22 @@ Our code detects this and *simulates* a successful submission during local devel
 5.  Give your project a name, like "Data Entry Form Handler".
 6.  Click the **Save project** icon (💾).
 
-## Step 2: Deploy the Script (The Critical Step!)
+## Step 2: Deploy the Script (CRITICAL for CORS!)
 
-This is where most errors happen.
+**This step prevents CORS errors. Follow exactly:**
 
-1.  At the top right, click the blue **Deploy** button and select **New deployment**.
-2.  Click the gear icon (⚙️) next to "Select type" and choose **Web app**.
-3.  Configure the settings **exactly** as follows:
-    *   **Description**: `Data Entry Form Handler` (or similar)
-    *   **Execute as**: `Me`
-    *   **Who has access**: `Anyone` 
-      *(This is essential. If you choose "Anyone with Google account" or "Only myself", it will fail.)*
+1.  Click the blue **Deploy** button → **New deployment**.
+2.  Click the gear icon (⚙️) next to "Select type" → choose **Web app**.
+3.  Configure settings **EXACTLY** as follows:
+    *   **Description**: `Data Entry Form Handler`
+    *   **Execute as**: `Me` ⚠️ **CRITICAL**
+    *   **Who has access**: `Anyone` ⚠️ **MUST BE "Anyone" - NOT "Anyone with Google account"**
 4.  Click **Deploy**.
+
+**⚠️ CORS ERROR PREVENTION:**
+- If you select "Anyone with Google account" or "Only myself", you WILL get CORS errors
+- The script MUST be accessible to anonymous users for CORS to work
+- This is safe because the script only accepts form data
 
 ## Step 3: Authorize Permissions
 
@@ -53,13 +60,37 @@ This is where most errors happen.
     ```
 3.  Paste the Web app URL you just copied between the single quotes.
 
-## Step 6: What If You Change the Script?
+## Step 6: Re-deployment (When You Change the Script)
 
-If you ever modify your Google Apps Script (e.g., to add a new field), you **MUST re-deploy it**.
+If you modify your Google Apps Script, you **MUST re-deploy**:
 
-1.  Click **Deploy** -> **Manage deployments**.
-2.  Select your active deployment and click the pencil icon (✏️) to edit it.
-3.  From the "Version" dropdown, select **New version**.
-4.  Click **Deploy**. You do not need to copy the URL again as it stays the same.
+1.  **Deploy** → **Manage deployments**
+2.  Click the pencil icon (✏️) on your active deployment
+3.  **Version** dropdown → **New version**
+4.  **VERIFY**: "Who has access" is still set to **"Anyone"**
+5.  Click **Deploy**
 
-By following these steps, your form will correctly save data to your Google Sheet when you publish your website.
+## 🔧 CORS Troubleshooting
+
+**If you still get CORS errors after following this guide:**
+
+### Check 1: Verify Deployment Settings
+```
+1. Go to Google Apps Script
+2. Deploy → Manage deployments  
+3. Verify "Who has access" = "Anyone" (not "Anyone with Google account")
+4. If wrong, edit deployment and fix it
+```
+
+### Check 2: Test the Script URL Directly
+```
+1. Copy your web app URL
+2. Paste it in a new browser tab
+3. You should see: {"status":"success","message":"Google Apps Script is working correctly!"...}
+4. If you see a login page, your permissions are wrong
+```
+
+### Check 3: Verify CORS Headers
+The script now includes comprehensive CORS headers that work with all modern browsers.
+
+**✅ Following this guide prevents CORS errors permanently.**

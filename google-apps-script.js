@@ -15,23 +15,33 @@
 const SPREADSHEET_ID = '1nATvrEfrTrS22K5AjZ9Q0hL_XHRJHCMVaRAqItYtlE0';
 const SHEET_NAME = 'Form Responses';
 
-// Define CORS headers for reuse
+// Define comprehensive CORS headers for all browsers
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, PUT, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+  'Access-Control-Max-Age': '86400',
+  'Access-Control-Allow-Credentials': 'false'
 };
+
+/**
+ * Handle OPTIONS requests (CORS preflight)
+ */
+function doOptions(e) {
+  return ContentService.createTextOutput('')
+    .setMimeType(ContentService.MimeType.TEXT)
+    .setHeaders(CORS_HEADERS);
+}
 
 /**
  * Main function to handle POST requests from the web form
  */
 function doPost(e) {
-  // Explicitly handle the preflight OPTIONS request sent by browsers
-  if (e.httpMethod === 'OPTIONS') {
-    return ContentService.createTextOutput()
-      .setMimeType(ContentService.MimeType.JSON)
-      .setContent(JSON.stringify({ status: 'preflight-ok' }))
-      .withHeaders(CORS_HEADERS);
+  // Handle preflight OPTIONS request (backup method)
+  if (e.parameter.method === 'OPTIONS' || !e.postData) {
+    return ContentService.createTextOutput('')
+      .setMimeType(ContentService.MimeType.TEXT)
+      .setHeaders(CORS_HEADERS);
   }
 
   try {
@@ -76,20 +86,25 @@ function doPost(e) {
  * Handle GET requests (for testing)
  */
 function doGet(e) {
-  const output = ContentService.createTextOutput();
-  output.setMimeType(ContentService.MimeType.JSON);
+  // Handle CORS preflight if needed
+  if (e.parameter.method === 'OPTIONS') {
+    return ContentService.createTextOutput('')
+      .setMimeType(ContentService.MimeType.TEXT)
+      .setHeaders(CORS_HEADERS);
+  }
   
   const response = {
     status: 'success',
     message: 'Google Apps Script is working correctly!',
     timestamp: new Date().toISOString(),
     spreadsheetId: SPREADSHEET_ID,
-    sheetName: SHEET_NAME
+    sheetName: SHEET_NAME,
+    corsEnabled: true
   };
   
-  output.setContent(JSON.stringify(response));
-  // Add CORS headers to handle preflight OPTIONS requests
-  return output.withHeaders(CORS_HEADERS);
+  return ContentService.createTextOutput(JSON.stringify(response))
+    .setMimeType(ContentService.MimeType.JSON)
+    .setHeaders(CORS_HEADERS);
 }
 
 /**
