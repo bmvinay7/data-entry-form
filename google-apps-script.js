@@ -15,6 +15,13 @@
 const SPREADSHEET_ID = '1nATvrEfrTrS22K5AjZ9Q0hL_XHRJHCMVaRAqItYtlE0';
 const SHEET_NAME = 'Form Responses';
 
+// Define CORS headers for reuse
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+};
+
 /**
  * Main function to handle POST requests from the web form
  */
@@ -300,7 +307,8 @@ function createSuccessResponse(message, rowNumber) {
   };
   
   output.setContent(JSON.stringify(response));
-  return output;
+  // Use withHeaders for Apps Script responses
+  return output.withHeaders(CORS_HEADERS);
 }
 
 /**
@@ -317,7 +325,8 @@ function createErrorResponse(errorMessage) {
   };
   
   output.setContent(JSON.stringify(response));
-  return output;
+  // Use withHeaders for Apps Script responses
+  return output.withHeaders(CORS_HEADERS);
 }
 
 /**
