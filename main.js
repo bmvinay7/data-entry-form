@@ -9,8 +9,8 @@ class DataEntryForm {
     this.submitBtn = document.getElementById('submitBtn');
     this.statusMessage = document.getElementById('statusMessage');
     
-    // Google Apps Script URL - FINAL WORKING VERSION WITH CORS FIX
-    this.scriptURL = 'https://script.google.com/macros/s/AKfycbyYsucAmavurfFVSW-umvRd27DsLZFdRk25UkEJ9wwX-ABT8Oe2aX7zliQuNswnDOAvsA/exec';
+    // Zapier Webhook URL - WORKING WEBHOOK
+    this.webhookURL = 'https://hooks.zapier.com/hooks/catch/24768108/u1cj6hr/';
     
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
@@ -21,7 +21,7 @@ class DataEntryForm {
   init() {
     this.attachEventListeners();
     this.setupValidation();
-    this.checkScriptConnection();
+    this.checkWebhookConnection();
     // Only test connection if not in development to avoid fetch errors
     if (!this.isDevelopment) {
       this.testConnectionOnLoad();
@@ -174,56 +174,34 @@ class DataEntryForm {
     return label ? label.textContent : field.name;
   }
 
-  async checkScriptConnection() {
-    if (this.scriptURL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-      console.warn('⚠️ Google Apps Script URL not configured');
+  async checkWebhookConnection() {
+    if (this.webhookURL === 'YOUR_ZAPIER_WEBHOOK_URL_HERE') {
+      console.warn('⚠️ Zapier Webhook URL not configured');
       if (this.isDevelopment) {
         this.showStatus(
-          '⚠️ Development Mode: Google Apps Script URL not configured. Please see COMPLETE_SETUP_GUIDE.md.',
+          '⚠️ Development Mode: Zapier Webhook URL not configured. Please set up your Zapier webhook.',
           'warning'
         );
       } else {
         this.showStatus(
-          '⚠️ Configuration Error: Please update the Google Apps Script URL in main.js. See COMPLETE_SETUP_GUIDE.md.',
+          '⚠️ Configuration Error: Please update the Zapier Webhook URL in main.js.',
           'error'
         );
       }
     } else {
-      console.log('✅ Google Apps Script URL configured:', this.scriptURL);
+      console.log('✅ Zapier Webhook URL configured:', this.webhookURL);
     }
   }
 
   async testConnectionOnLoad() {
     if (this.isDevelopment) return;
 
-    try {
-      console.log('🔄 Testing connection to Google Apps Script...');
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
-      
-      const response = await fetch(this.scriptURL, { 
-        method: 'GET', 
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        signal: controller.signal 
-      });
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.corsEnabled) {
-          this.showStatus('✅ Connected to Google Sheets! CORS properly configured.', 'success');
-        } else {
-          this.showStatus('✅ Connected to Google Sheets! Ready to accept submissions.', 'success');
-        }
-      } else {
-        this.showStatus('⚠️ Connection to Google Sheets failed. Please check script deployment.', 'warning');
-      }
-    } catch (error) {
-      console.warn('ℹ️ Connection test failed:', error.message);
-      this.showStatus('⚠️ Connection test failed. Form may still work for submissions.', 'warning');
+    if (this.webhookURL === 'YOUR_ZAPIER_WEBHOOK_URL_HERE') {
+      this.showStatus('⚠️ Please configure your Zapier webhook URL to enable form submissions.', 'warning');
+      return;
     }
+
+    this.showStatus('✅ Ready to submit data via Zapier webhook!', 'success');
   }
 
   async handleSubmit(e) {
@@ -257,43 +235,30 @@ class DataEntryForm {
       const data = Object.fromEntries(formData.entries());
       data.timestamp = new Date().toISOString();
 
-      console.log('📤 Submitting form data to Google Sheets...');
+      console.log('📤 Submitting form data via Zapier webhook...');
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      // Try direct fetch first, then fallback to iframe
-      try {
-        const response = await fetch(this.scriptURL, {
-          method: 'POST',
-          mode: 'no-cors', // This prevents CORS preflight
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams(data)
-        });
-        
-        // Since we're using no-cors, we can't read the response
-        // But the request should go through
-        this.showStatus(`✅ Data submitted successfully! Please check your Google Spreadsheet.`, 'success');
+      // Submit to Zapier webhook - much simpler and more reliable
+      const response = await fetch(this.webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        this.showStatus(`✅ Data submitted successfully! Your information has been saved.`, 'success');
         this.form.reset();
         this.clearAllErrors();
         this.statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-      } catch (fetchError) {
-        console.log('Fetch failed, trying iframe method...', fetchError);
-        
-        // Fallback to iframe method
-        const result = await this.submitViaIframe(data);
-        
-        if (result.success) {
-          this.showStatus(`✅ Data submitted successfully! Please check your Google Spreadsheet.`, 'success');
-          this.form.reset();
-          this.clearAllErrors();
-          this.statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          throw new Error('Submission may have failed. Please check your Google Spreadsheet.');
-        }
+      } else {
+        throw new Error(`Webhook submission failed with status: ${response.status}`);
       }
     } catch (error) {
       console.error('❌ Submission error:', error);
@@ -311,74 +276,7 @@ class DataEntryForm {
     }
   }
 
-  async submitViaIframe(data) {
-    return new Promise((resolve) => {
-      console.log('Using iframe submission method...');
-      
-      // Create a simple hidden form
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = this.scriptURL;
-      form.target = 'hidden_iframe';
-      form.style.display = 'none';
-      
-      // Add form data as hidden inputs
-      Object.keys(data).forEach(key => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = data[key] || '';
-        form.appendChild(input);
-      });
-      
-      // Create hidden iframe
-      const iframe = document.createElement('iframe');
-      iframe.name = 'hidden_iframe';
-      iframe.style.display = 'none';
-      iframe.style.width = '1px';
-      iframe.style.height = '1px';
-      iframe.style.border = 'none';
-      iframe.style.position = 'absolute';
-      iframe.style.left = '-9999px';
-      
-      // Clean up function
-      const cleanup = () => {
-        setTimeout(() => {
-          if (document.body.contains(form)) document.body.removeChild(form);
-          if (document.body.contains(iframe)) document.body.removeChild(iframe);
-        }, 1000);
-      };
-      
-      // Handle iframe load
-      iframe.onload = () => {
-        console.log('Iframe loaded - form submitted');
-        cleanup();
-        resolve({ success: true });
-      };
-      
-      // Handle errors
-      iframe.onerror = () => {
-        console.log('Iframe error - but form may have been submitted');
-        cleanup();
-        resolve({ success: true }); // Assume success even on error
-      };
-      
-      // Add elements to page
-      document.body.appendChild(iframe);
-      document.body.appendChild(form);
-      
-      // Submit the form
-      console.log('Submitting form via iframe...');
-      form.submit();
-      
-      // Timeout fallback
-      setTimeout(() => {
-        console.log('Iframe submission timeout - assuming success');
-        cleanup();
-        resolve({ success: true });
-      }, 10000);
-    });
-  }
+
 
   async handleSubmitFallback(e) {
     // This is the old method - keeping as fallback
@@ -475,36 +373,37 @@ class DataEntryForm {
   }
 
   async testConnection() {
-    try {
-      console.log('🔄 Testing connection...');
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+    if (this.webhookURL === 'YOUR_ZAPIER_WEBHOOK_URL_HERE') {
+      this.showStatus('❌ Please configure your Zapier webhook URL first.', 'error');
+      return false;
+    }
 
-      const response = await fetch(this.scriptURL, { 
-        method: 'GET', 
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'omit',
-        signal: controller.signal 
+    try {
+      console.log('🔄 Testing Zapier webhook...');
+      const testData = {
+        test: true,
+        message: 'Connection test from form',
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch(this.webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testData)
       });
-      clearTimeout(timeoutId);
 
       if (response.ok) {
-        const result = await response.json();
-        console.log('Connection test result:', result);
-        this.showStatus('✅ Connection successful! Google Sheets integration is working.', 'success');
+        this.showStatus('✅ Zapier webhook connection successful!', 'success');
         return true;
       } else {
-        this.showStatus(`❌ Connection failed (Status: ${response.status}). Check Apps Script deployment.`, 'error');
+        this.showStatus(`❌ Webhook test failed (Status: ${response.status}).`, 'error');
         return false;
       }
     } catch (error) {
-      console.error('❌ Connection test error:', error);
-      if (this.isDevelopment) {
-        this.showStatus('❌ Connection error. This is expected in local development.', 'error');
-      } else {
-        this.showStatus(`❌ Connection error: ${error.message}. Check CORS configuration.`, 'error');
-      }
+      console.error('❌ Webhook test error:', error);
+      this.showStatus(`❌ Webhook error: ${error.message}`, 'error');
       return false;
     }
   }
@@ -577,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fillButton.addEventListener('click', DemoHelpers.generateTestData);
     
     const testButton = document.createElement('button');
-    testButton.textContent = 'Test Connection 🔗';
+    testButton.textContent = 'Test Zapier 🔗';
     testButton.type = 'button';
     testButton.className = 'btn btn--secondary btn--small';
     testButton.addEventListener('click', () => dataEntryForm.testConnection());
@@ -592,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`
 🌸 Development Tools Available:
 • DemoHelpers.generateTestData() - Fill form with test data
-• dataEntryForm.testConnection() - Test connection to Google Sheets
+• dataEntryForm.testConnection() - Test Zapier webhook connection
     `);
   }
 
