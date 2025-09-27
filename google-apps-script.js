@@ -29,10 +29,10 @@ function doPost(e) {
   try {
     // Log the incoming request for debugging
     console.log('Received POST request:', e);
-    console.log('Form data:', e.parameter);
     
-    // Get the form data
-    const formData = e.parameter;
+    // Get the form data from the JSON payload
+    const formData = JSON.parse(e.postData.contents);
+    console.log('Parsed form data:', formData);
     
     // Validate required fields
     if (!formData.fullName || !formData.email || !formData.streetAddress || !formData.city || !formData.postcode) {
@@ -80,7 +80,8 @@ function doGet(e) {
   };
   
   output.setContent(JSON.stringify(response));
-  return output;
+  // Add CORS headers to handle preflight OPTIONS requests
+  return output.withHeaders(CORS_HEADERS);
 }
 
 /**

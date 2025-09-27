@@ -10,7 +10,7 @@ class DataEntryForm {
     this.statusMessage = document.getElementById('statusMessage');
     
     // Google Apps Script URL - UPDATED WITH YOUR SCRIPT URL
-    this.scriptURL = 'https://script.google.com/macros/s/AKfycbx5tv9BOxIjcqW_blMpu5BQPBStp-_MjopylZtjgbc4VHU4K-B3QCiDptY63H8XegT0IA/exec';
+    this.scriptURL = 'https://script.google.com/macros/s/AKfycbxO-90CEoRJfVty_v9DNY3MjvX04KHc1Vl7Y3jg4UWrFuoNaz2z_baiGzKK8C7r6egK9A/exec';
     
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
@@ -237,8 +237,10 @@ class DataEntryForm {
 
     try {
       const formData = new FormData(this.form);
-      formData.append('timestamp', new Date().toISOString());
-      console.log('📤 Submitting form data to Google Sheets...');
+      const data = Object.fromEntries(formData.entries());
+      data.timestamp = new Date().toISOString();
+
+      console.log('📤 Submitting form data as JSON to Google Sheets...');
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -246,7 +248,10 @@ class DataEntryForm {
       const response = await fetch(this.scriptURL, {
         method: 'POST',
         mode: 'cors',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
