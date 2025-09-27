@@ -240,12 +240,9 @@ class DataEntryForm {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      // Submit to Zapier webhook - much simpler and more reliable
+      // Submit to Zapier webhook - using form data to avoid CORS issues
       const response = await fetch(this.webhookURL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(data),
         signal: controller.signal
       });
@@ -388,9 +385,6 @@ class DataEntryForm {
 
       const response = await fetch(this.webhookURL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(testData)
       });
 
