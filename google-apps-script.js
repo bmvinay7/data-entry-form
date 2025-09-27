@@ -26,6 +26,14 @@ const CORS_HEADERS = {
  * Main function to handle POST requests from the web form
  */
 function doPost(e) {
+  // Explicitly handle the preflight OPTIONS request sent by browsers
+  if (e.httpMethod === 'OPTIONS') {
+    return ContentService.createTextOutput()
+      .setMimeType(ContentService.MimeType.JSON)
+      .setContent(JSON.stringify({ status: 'preflight-ok' }))
+      .withHeaders(CORS_HEADERS);
+  }
+
   try {
     // Log the incoming request for debugging
     console.log('Received POST request:', e);

@@ -10,7 +10,7 @@ class DataEntryForm {
     this.statusMessage = document.getElementById('statusMessage');
     
     // Google Apps Script URL - UPDATED WITH YOUR SCRIPT URL
-    this.scriptURL = 'https://script.google.com/macros/s/AKfycbxO-90CEoRJfVty_v9DNY3MjvX04KHc1Vl7Y3jg4UWrFuoNaz2z_baiGzKK8C7r6egK9A/exec';
+    this.scriptURL = 'https://script.google.com/macros/s/AKfycbxagsZQktsFRbsarrjFDnA27cDx3ak2BReFz-AVk17Y8IhMlFjiEKeALaiCp5aatXT4xA/exec';
     
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
