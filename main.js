@@ -201,7 +201,7 @@ class DataEntryForm {
       return;
     }
 
-    this.showStatus('✅ Ready to submit data via Zapier webhook!', 'success');
+    // Webhook is configured and ready - no need to show status message to users
   }
 
   async handleSubmit(e) {
