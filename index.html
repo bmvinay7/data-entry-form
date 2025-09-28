@@ -147,6 +147,29 @@
       </main>
     </div>
 
+    <!-- Success Dialog Modal -->
+    <div class="dialog-overlay" id="successDialog">
+      <div class="dialog">
+        <div class="dialog__header">
+          <div class="dialog__icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="#059669"/>
+              <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 class="dialog__title">Form Submitted Successfully!</h2>
+        </div>
+        <div class="dialog__body">
+          <p class="dialog__message">Thank you for your submission. Your information has been received and saved securely.</p>
+        </div>
+        <div class="dialog__footer">
+          <button class="btn btn--primary dialog__button" id="closeDialog">
+            <span class="btn__text">Continue</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/main.js"></script>
   </body>
 </html>

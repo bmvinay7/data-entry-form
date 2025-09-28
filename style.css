@@ -594,6 +594,183 @@ body::before {
   }
 }
 
+/* Success Dialog Modal */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(28, 25, 23, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dialog {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-xl);
+  box-shadow: 
+    var(--shadow-warm),
+    0 0 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(251, 146, 60, 0.2);
+  max-width: 480px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.dialog-overlay.show .dialog {
+  transform: scale(1) translateY(0);
+}
+
+.dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg, 
+    var(--accent-orange) 0%, 
+    var(--accent-coral) 25%, 
+    var(--accent-warm) 50%, 
+    var(--accent-coral) 75%, 
+    var(--accent-orange) 100%
+  );
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.dialog__header {
+  padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-lg);
+  text-align: center;
+  border-bottom: 1px solid rgba(231, 229, 228, 0.5);
+}
+
+.dialog__icon {
+  margin: 0 auto var(--spacing-md);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dialog__icon svg {
+  filter: drop-shadow(0 4px 12px rgba(5, 150, 105, 0.3));
+}
+
+.dialog__title {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  background: linear-gradient(
+    135deg, 
+    var(--success-colour) 0%, 
+    var(--accent-orange) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dialog__body {
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.dialog__message {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+}
+
+.dialog__footer {
+  padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+}
+
+.dialog__button {
+  min-width: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dialog__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.dialog__button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+/* Dialog animations */
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dialogFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+}
+
+/* Responsive dialog */
+@media (max-width: 480px) {
+  .dialog {
+    width: 95%;
+    margin: var(--spacing-md);
+  }
+  
+  .dialog__header,
+  .dialog__body,
+  .dialog__footer {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+  
+  .dialog__title {
+    font-size: 1.25rem;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   *,

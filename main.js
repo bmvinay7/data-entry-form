@@ -8,13 +8,13 @@ class DataEntryForm {
     this.form = document.getElementById('dataEntryForm');
     this.submitBtn = document.getElementById('submitBtn');
     this.statusMessage = document.getElementById('statusMessage');
-    
+
     // Zapier Webhook URL - WORKING WEBHOOK
     this.webhookURL = 'https://hooks.zapier.com/hooks/catch/24768108/u1cj6hr/';
-    
+
     // Development mode detection
     this.isDevelopment = this.isLocalhost();
-    
+
     this.init();
   }
 
@@ -35,16 +35,16 @@ class DataEntryForm {
   }
 
   isLocalhost() {
-    return window.location.hostname === 'localhost' || 
-           window.location.hostname === '127.0.0.1' ||
-           window.location.hostname === '' ||
-           window.location.hostname.includes('webcontainer-api.io');
+    return window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '' ||
+      window.location.hostname.includes('webcontainer-api.io');
   }
 
   attachEventListeners() {
     this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     this.form.addEventListener('reset', () => this.handleReset());
-    
+
     // Real-time validation
     const inputs = this.form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
@@ -94,7 +94,7 @@ class DataEntryForm {
     const fieldName = field.name;
     const value = field.value.trim();
     const rules = this.validationRules[fieldName];
-    
+
     if (!rules) return true;
 
     // Clear previous error
@@ -219,13 +219,9 @@ class DataEntryForm {
       console.log('🛠️ DEVELOPMENT MODE: Simulating form submission.');
       setTimeout(() => {
         this.setLoading(false);
-        this.showStatus(
-          '✅ (DEV) Submission Simulated! Data was NOT sent. This is expected. Deploy to a live server to save data.',
-          'success'
-        );
+        this.showSuccessDialog();
         this.form.reset();
         this.clearAllErrors();
-        this.statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 1500);
       return;
     }
@@ -250,23 +246,22 @@ class DataEntryForm {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        this.showStatus(`✅ Data submitted successfully! Your information has been saved.`, 'success');
+        this.showSuccessDialog();
         this.form.reset();
         this.clearAllErrors();
-        this.statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         throw new Error(`Webhook submission failed with status: ${response.status}`);
       }
     } catch (error) {
       console.error('❌ Submission error:', error);
       let errorMessage = 'There was an error submitting your information. Please try again.';
-      
+
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
         errorMessage = '❌ Submission Failed: Could not connect to the server. Please check your internet connection.';
       } else if (error.name === 'AbortError') {
         errorMessage = 'Submission timed out. Please check your internet connection and try again.';
       }
-      
+
       this.showStatus(errorMessage, 'error');
     } finally {
       this.setLoading(false);
@@ -324,13 +319,13 @@ class DataEntryForm {
     } catch (error) {
       console.error('❌ Submission error:', error);
       let errorMessage = 'There was an error submitting your information. Please try again.';
-      
+
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
         errorMessage = '❌ Submission Failed: Could not connect to the server. Please check your internet connection and see the SETUP_GUIDE.md for troubleshooting deployment issues.';
       } else if (error.name === 'AbortError') {
         errorMessage = 'Submission timed out. Please check your internet connection and try again.';
       }
-      
+
       this.showStatus(errorMessage, 'error');
     } finally {
       this.setLoading(false);
@@ -359,7 +354,7 @@ class DataEntryForm {
     this.statusMessage.className = `status-message status-message--${type}`;
     this.statusMessage.style.display = 'block';
     this.statusMessage.setAttribute('role', type === 'error' ? 'alert' : 'status');
-    
+
     if (type !== 'error') {
       setTimeout(() => this.hideStatus(), 8000);
     }
@@ -367,6 +362,37 @@ class DataEntryForm {
 
   hideStatus() {
     this.statusMessage.style.display = 'none';
+  }
+
+  showSuccessDialog() {
+    const dialog = document.getElementById('successDialog');
+    dialog.classList.add('show');
+    
+    // Add event listener for close button
+    const closeButton = document.getElementById('closeDialog');
+    const closeDialog = () => {
+      dialog.classList.remove('show');
+      closeButton.removeEventListener('click', closeDialog);
+    };
+    
+    closeButton.addEventListener('click', closeDialog);
+    
+    // Close dialog when clicking outside
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) {
+        closeDialog();
+      }
+    });
+    
+    // Close dialog with Escape key
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeDialog();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
   }
 
   async testConnection() {
@@ -437,13 +463,13 @@ class DemoHelpers {
 // Initialize the form when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   const dataEntryForm = new DataEntryForm();
-  
+
   window.dataEntryForm = dataEntryForm;
   window.DemoHelpers = DemoHelpers;
-  
+
   if (dataEntryForm.isDevelopment) {
     console.log('🛠️ Development mode detected - adding demo tools');
-    
+
     const demoContainer = document.createElement('div');
     demoContainer.className = 'demo-tools';
     demoContainer.style.cssText = `
@@ -457,31 +483,31 @@ document.addEventListener('DOMContentLoaded', () => {
       flex-wrap: wrap;
       align-items: center;
     `;
-    
+
     const demoTitle = document.createElement('span');
     demoTitle.textContent = '🌸 Dev Tools:';
     demoTitle.style.fontWeight = '600';
     demoTitle.style.color = '#c2410c';
-    
+
     const fillButton = document.createElement('button');
     fillButton.textContent = 'Fill Test Data 🌻';
     fillButton.type = 'button';
     fillButton.className = 'btn btn--secondary btn--small';
     fillButton.addEventListener('click', DemoHelpers.generateTestData);
-    
+
     const testButton = document.createElement('button');
     testButton.textContent = 'Test Zapier 🔗';
     testButton.type = 'button';
     testButton.className = 'btn btn--secondary btn--small';
     testButton.addEventListener('click', () => dataEntryForm.testConnection());
-    
+
     demoContainer.appendChild(demoTitle);
     demoContainer.appendChild(fillButton);
     demoContainer.appendChild(testButton);
-    
+
     const form = document.getElementById('dataEntryForm');
     form.insertBefore(demoContainer, form.firstChild);
-    
+
     console.log(`
 🌸 Development Tools Available:
 • DemoHelpers.generateTestData() - Fill form with test data
