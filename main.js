@@ -367,23 +367,23 @@ class DataEntryForm {
   showSuccessDialog() {
     const dialog = document.getElementById('successDialog');
     dialog.classList.add('show');
-    
+
     // Add event listener for close button
     const closeButton = document.getElementById('closeDialog');
     const closeDialog = () => {
       dialog.classList.remove('show');
       closeButton.removeEventListener('click', closeDialog);
     };
-    
+
     closeButton.addEventListener('click', closeDialog);
-    
+
     // Close dialog when clicking outside
     dialog.addEventListener('click', (e) => {
       if (e.target === dialog) {
         closeDialog();
       }
     });
-    
+
     // Close dialog with Escape key
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
@@ -391,7 +391,7 @@ class DataEntryForm {
         document.removeEventListener('keydown', handleEscape);
       }
     };
-    
+
     document.addEventListener('keydown', handleEscape);
   }
 
