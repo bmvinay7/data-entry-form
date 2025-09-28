@@ -88,7 +88,7 @@ body {
   position: relative;
 }
 
-/* Enhanced floral background overlay pattern */
+/* Static background overlay pattern */
 body::before {
   content: '';
   position: fixed;
@@ -102,24 +102,8 @@ body::before {
     radial-gradient(circle at 30% 85%, rgba(251, 191, 36, 0.1) 0%, transparent 45%),
     radial-gradient(circle at 70% 75%, rgba(194, 65, 12, 0.08) 0%, transparent 45%),
     radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
-  animation: floralBreeze 25s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
-}
-
-@keyframes floralBreeze {
-  0%, 100% { 
-    opacity: 0.8; 
-    transform: translateY(0px) scale(1) rotate(0deg);
-  }
-  33% { 
-    opacity: 0.9; 
-    transform: translateY(-8px) scale(1.02) rotate(1deg);
-  }
-  66% { 
-    opacity: 0.7; 
-    transform: translateY(-5px) scale(0.98) rotate(-1deg);
-  }
 }
 
 /* Container */
@@ -230,57 +214,9 @@ body::before {
   z-index: 2;
 }
 
-.main::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg, 
-    var(--accent-orange) 0%, 
-    var(--accent-coral) 25%, 
-    var(--accent-warm) 50%, 
-    var(--accent-coral) 75%, 
-    var(--accent-orange) 100%
-  );
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  animation: gradientShift 8s ease-in-out infinite;
-}
 
-@keyframes gradientShift {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
-}
 
-.main::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(
-      circle at 20% 20%, 
-      rgba(251, 146, 60, 0.05) 0%, 
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 80% 80%, 
-      rgba(251, 113, 133, 0.03) 0%, 
-      transparent 30%
-    );
-  animation: backgroundShimmer 15s ease-in-out infinite;
-  pointer-events: none;
-  z-index: -1;
-}
 
-@keyframes backgroundShimmer {
-  0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.5; }
-  50% { transform: rotate(180deg) scale(1.1); opacity: 0.3; }
-}
 
 /* Form Styles */
 .form {
@@ -352,7 +288,6 @@ body::before {
     0 0 0 4px rgba(234, 88, 12, 0.15),
     0 8px 25px rgba(234, 88, 12, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px) scale(1.01);
   background: rgba(255, 255, 255, 0.98);
 }
 
@@ -616,22 +551,7 @@ body::before {
   animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Floating elements animation */
-@keyframes floatGentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-4px) rotate(0.5deg); }
-  66% { transform: translateY(-2px) rotate(-0.5deg); }
-}
 
-.form__group:nth-child(odd) {
-  animation: floatGentle 8s ease-in-out infinite;
-  animation-delay: 0.3s;
-}
-
-.form__group:nth-child(even) {
-  animation: floatGentle 8s ease-in-out infinite;
-  animation-delay: 1.2s;
-}
 
 /* Focus visible for better accessibility */
 .btn:focus-visible,
@@ -647,30 +567,9 @@ body::before {
 .form__group:hover .form__select,
 .form__group:hover .form__textarea {
   border-color: rgba(234, 88, 12, 0.4);
-  transform: translateY(-1px);
 }
 
-/* Enhanced visual effects for the floral theme */
-.form__input:focus::before,
-.form__select:focus::before,
-.form__textarea:focus::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, var(--accent-orange), var(--accent-coral), var(--accent-warm));
-  border-radius: var(--radius-md);
-  z-index: -1;
-  opacity: 0.3;
-  animation: borderGlow 2s ease-in-out infinite;
-}
 
-@keyframes borderGlow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
 
 /* Background parallax effect for mobile */
 @media (max-width: 768px) {
