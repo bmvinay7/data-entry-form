@@ -261,7 +261,8 @@ body::before {
 .form__required {
   color: var(--accent-coral);
   font-weight: var(--font-weight-bold);
-  font-size: 1.1rem;
+  font-size: 1rem;
+  margin-left: 2px;
 }
 
 .form__input,

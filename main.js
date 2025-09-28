@@ -72,18 +72,18 @@ class DataEntryForm {
         message: 'Please enter a valid phone number (10-15 digits)'
       },
       streetAddress: {
-        required: true,
+        required: false,
         minLength: 5,
         maxLength: 100,
         message: 'Please enter a valid street address (5-100 characters)'
       },
       city: {
-        required: true,
+        required: false,
         pattern: /^[a-zA-Z\s\-'\.]{2,50}$/,
         message: 'Please enter a valid city name (2-50 characters)'
       },
       postcode: {
-        required: true,
+        required: false,
         pattern: /^[A-Z0-9\s]{3,10}$/i,
         message: 'Please enter a valid postcode'
       }
